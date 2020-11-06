@@ -1,6 +1,6 @@
 import click
 
-from . import __version__
+from {{cookiecutter.module_name}} import __version__
 
 
 @click.group(help="{{cookiecutter.cli_help}}")
