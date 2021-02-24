@@ -1,0 +1,9 @@
+{
+  "human_readable_name": null,
+  "name": "{{ cookiecutter.human_readable_name.lower().replace(' ', '-') }}",
+  "module_name": "{{ cookiecutter.name.replace('-', '') }}",
+  "version": "0.0.1",
+  "author_name": null,
+  "author_email": null,
+  "description": ""
+}
