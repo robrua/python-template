@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 from pathlib import Path
 
-from setuptools import setup, find_packages
-
+from setuptools import find_packages, setup
 
 install_requires = []
 
@@ -22,6 +21,7 @@ setup(
     description="{{cookiecutter.description}}",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    package_dir={"{{cookiecutter.module_name}}": "{{cookiecutter.module_name}}"},
     packages=find_packages(),
     zip_safe=True,
     install_requires=install_requires,
