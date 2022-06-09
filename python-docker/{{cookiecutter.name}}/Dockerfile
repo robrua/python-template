@@ -19,15 +19,15 @@ ENV PATH $CONDA_HOME/bin:$PATH
 
 
 # -- Python version
-ARG python_version=3.9
+ARG python_version=3.10
 
 
 # -- Install Miniconda python
 RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p $CONDA_HOME && \
     rm ~/conda.sh && \
-    conda install -y python=${python_version} && \
-    $CONDA_HOME/bin/conda clean -tipsy
+    conda install --yes python=${python_version} && \
+    $CONDA_HOME/bin/conda clean --all --yes
 
 
 # -- Install project dependencies
