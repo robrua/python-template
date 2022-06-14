@@ -1,10 +1,7 @@
-import pkg_resources
+from importlib import resources
 
-__version__ = (
-    pkg_resources.resource_string("{{cookiecutter.module_name}}", "VERSION.txt")
-    .decode("UTF-8")
-    .strip()
-)
+version_file = resources.files(__package__).joinpath("VERSION.txt")
+__version__ = version_file.read_text(encoding="UTF-8").strip()
 
 
 __all__ = ["__version__"]
