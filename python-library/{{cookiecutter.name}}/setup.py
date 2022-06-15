@@ -24,6 +24,7 @@ setup(
     package_dir={"{{cookiecutter.module_name}}": "{{cookiecutter.module_name}}"},
     packages=find_packages(),
     zip_safe=True,
+    python_requires=">=3.9",
     install_requires=install_requires,
     include_package_data=True,
 )
