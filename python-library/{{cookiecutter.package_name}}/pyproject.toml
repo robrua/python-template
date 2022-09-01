@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ cookiecutter.package_name }}"
+description = "{{ cookiecutter.description }}"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" }]
+keywords = []
+classifiers = []
+{% if cookiecutter.homepage_url != "" and cookiecutter.documentation_url != "" and cookiecutter.repository_url != "" -%}
+urls = { homepage = "{{ cookiecutter.homepage_url }}", documentation = "{{ cookiecutter.documentation_url }}", repository = "{{ cookiecutter.repository_url }}" }
+{% elif cookiecutter.homepage_url != "" and cookiecutter.documentation_url != "" -%}
+urls = { homepage = "{{ cookiecutter.homepage_url }}", documentation = "{{ cookiecutter.documentation_url }}" }
+{% elif cookiecutter.homepage_url != "" and cookiecutter.repository_url != "" -%}
+urls = { homepage = "{{ cookiecutter.homepage_url }}", repository = "{{ cookiecutter.repository_url }}" }
+{% elif cookiecutter.documentation_url != "" and cookiecutter.repository_url != "" -%}
+urls = { documentation = "{{ cookiecutter.documentation_url }}", repository = "{{ cookiecutter.repository_url }}" }
+{% elif cookiecutter.homepage_url != "" -%}
+urls = { homepage = "{{ cookiecutter.homepage_url }}" }
+{% elif cookiecutter.documentation_url != "" -%}
+urls = { documentation = "{{ cookiecutter.documentation_url }}" }
+{% elif cookiecutter.repository_url != "" -%}
+urls = { repository = "{{ cookiecutter.repository_url }}" }
+{% else -%}
+urls = {}
+{%- endif %}
+dependencies = []
+optional-dependencies = { dev = ["flake8", "black", "isort", "mypy", "pytest"] }
+dynamic = ["version"]
+
+[tool.setuptools]
+zip-safe = true
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { file = ["src/{{ cookiecutter.module_name }}/VERSION.txt"] }
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "tests"]
+known_first_party = "{{ cookiecutter.module_name }}"
+
+[tool.mypy]
+disallow_any_unimported = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+check_untyped_defs = true
+show_error_codes = true

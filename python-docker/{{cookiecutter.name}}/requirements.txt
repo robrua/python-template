@@ -1,6 +1,0 @@
-flake8
-black
-isort
-mypy
-pytest
-click

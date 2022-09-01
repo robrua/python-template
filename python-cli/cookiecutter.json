@@ -1,11 +1,14 @@
 {
   "human_readable_name": null,
-  "name": "{{ cookiecutter.human_readable_name.lower().replace(' ', '-') }}",
-  "module_name": "{{ cookiecutter.name.replace('-', '') }}",
+  "package_name": "{{ cookiecutter.human_readable_name.lower().replace(' ', '-') }}",
+  "module_name": "{{ cookiecutter.package_name.replace('-', '') }}",
   "version": "0.1.0",
-  "author_name": null,
-  "author_email": null,
+  "author_name": "",
+  "author_email": "",
   "description": "",
-  "cli_command": "{{ cookiecutter.name }}",
+  "homepage_url": "",
+  "documentation_url": "",
+  "repository_url": "",
+  "cli_command": "{{ cookiecutter.package_name }}",
   "cli_help": "{{ cookiecutter.human_readable_name }} CLI Application"
 }

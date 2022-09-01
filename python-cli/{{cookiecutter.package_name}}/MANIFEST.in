@@ -1,0 +1,2 @@
+src/{{ cookiecutter.module_name }}/VERSION.txt
+src/{{ cookiecutter.module_name }}/py.typed
