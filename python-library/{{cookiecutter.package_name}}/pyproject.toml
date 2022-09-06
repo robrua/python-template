@@ -28,7 +28,14 @@ urls = { repository = "{{ cookiecutter.repository_url }}" }
 urls = {}
 {%- endif %}
 dependencies = []
-optional-dependencies = { dev = ["flake8", "black", "isort", "mypy", "pytest"] }
+optional-dependencies = { dev = [
+    "flake8",
+    "black",
+    "isort",
+    "mypy",
+    "types-setuptools",
+    "pytest",
+] }
 dynamic = ["version"]
 
 [tool.setuptools]

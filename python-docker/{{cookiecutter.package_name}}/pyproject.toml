@@ -29,7 +29,14 @@ urls = {}
 {%- endif %}
 scripts = { {{cookiecutter.cli_command}} = "{{cookiecutter.module_name}}.__main__:{{ cookiecutter.package_name.replace('-', '_') }}" }
 dependencies = ["click"]
-optional-dependencies = { dev = ["flake8", "black", "isort", "mypy", "pytest"] }
+optional-dependencies = { dev = [
+    "flake8",
+    "black",
+    "isort",
+    "mypy",
+    "types-setuptools",
+    "pytest",
+] }
 dynamic = ["version"]
 
 [tool.setuptools]
