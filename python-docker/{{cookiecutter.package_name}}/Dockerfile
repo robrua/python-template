@@ -18,25 +18,29 @@ ENV CONDA_HOME /opt/conda
 ENV PATH $CONDA_HOME/bin:$PATH
 
 
-# -- Python version
-ARG python_version=3.10
+# -- Conda & Python versions
+ARG CONDA_VERSION=latest
+ARG PYTHON_VERSION=3.10
 
 
 # -- Install Miniconda python
-RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/conda.sh && \
+RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p $CONDA_HOME && \
     rm ~/conda.sh && \
-    conda install --yes python=${python_version} && \
+    conda install --yes python=${PYTHON_VERSION} && \
     $CONDA_HOME/bin/conda clean --all --yes
 
 
 # -- Install the project
-ADD setup.py /opt/{{cookiecutter.package_name}}/setup.py
-ADD MANIFEST.in /opt/{{cookiecutter.package_name}}/MANIFEST.in
-ADD pyproject.toml /opt/{{cookiecutter.package_name}}/pyproject.toml
-ADD src/ /opt/{{cookiecutter.package_name}}/src/
+ARG PROJECT_HOME=/opt/{{cookiecutter.package_name}}
 
-RUN pip install -e /opt/{{cookiecutter.package_name}}/
+ADD setup.py ${PROJECT_HOME}/setup.py
+ADD MANIFEST.in ${PROJECT_HOME}/MANIFEST.in
+ADD README.md ${PROJECT_HOME}/README.md
+ADD pyproject.toml ${PROJECT_HOME}/pyproject.toml
+ADD src/ ${PROJECT_HOME}/src/
+
+RUN pip install -e ${PROJECT_HOME}/
 
 
 # -- Launch project on run

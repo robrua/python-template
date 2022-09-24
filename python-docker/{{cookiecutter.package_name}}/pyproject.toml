@@ -12,19 +12,19 @@ keywords = []
 classifiers = []
 {% if cookiecutter.homepage_url != "" and cookiecutter.documentation_url != "" and cookiecutter.repository_url != "" -%}
 urls = { homepage = "{{ cookiecutter.homepage_url }}", documentation = "{{ cookiecutter.documentation_url }}", repository = "{{ cookiecutter.repository_url }}" }
-{% elif cookiecutter.homepage_url != "" and cookiecutter.documentation_url != "" -%}
+{%- elif cookiecutter.homepage_url != "" and cookiecutter.documentation_url != "" -%}
 urls = { homepage = "{{ cookiecutter.homepage_url }}", documentation = "{{ cookiecutter.documentation_url }}" }
-{% elif cookiecutter.homepage_url != "" and cookiecutter.repository_url != "" -%}
+{%- elif cookiecutter.homepage_url != "" and cookiecutter.repository_url != "" -%}
 urls = { homepage = "{{ cookiecutter.homepage_url }}", repository = "{{ cookiecutter.repository_url }}" }
-{% elif cookiecutter.documentation_url != "" and cookiecutter.repository_url != "" -%}
+{%- elif cookiecutter.documentation_url != "" and cookiecutter.repository_url != "" -%}
 urls = { documentation = "{{ cookiecutter.documentation_url }}", repository = "{{ cookiecutter.repository_url }}" }
-{% elif cookiecutter.homepage_url != "" -%}
+{%- elif cookiecutter.homepage_url != "" -%}
 urls = { homepage = "{{ cookiecutter.homepage_url }}" }
-{% elif cookiecutter.documentation_url != "" -%}
+{%- elif cookiecutter.documentation_url != "" -%}
 urls = { documentation = "{{ cookiecutter.documentation_url }}" }
-{% elif cookiecutter.repository_url != "" -%}
+{%- elif cookiecutter.repository_url != "" -%}
 urls = { repository = "{{ cookiecutter.repository_url }}" }
-{% else -%}
+{%- else -%}
 urls = {}
 {%- endif %}
 scripts = { {{cookiecutter.cli_command}} = "{{cookiecutter.module_name}}.__main__:{{ cookiecutter.package_name.replace('-', '_') }}" }
