@@ -1,2 +1,2 @@
-src/{{ cookiecutter.module_name }}/VERSION.txt
-src/{{ cookiecutter.module_name }}/py.typed
+include src/{{ cookiecutter.module_name }}/VERSION.txt
+include src/{{ cookiecutter.module_name }}/py.typed
