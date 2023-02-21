@@ -30,6 +30,7 @@ urls = {}
 dependencies = []
 optional-dependencies = { dev = [
     "flake8",
+    "flake8-bugbear",
     "black",
     "isort",
     "mypy",
@@ -53,6 +54,7 @@ known_first_party = "{{ cookiecutter.module_name }}"
 [tool.mypy]
 disallow_any_unimported = true
 disallow_untyped_defs = true
+disallow_any_generics = true
 no_implicit_optional = true
 strict_equality = true
 warn_unused_ignores = true
