@@ -30,8 +30,7 @@ urls = {}
 scripts = { {{cookiecutter.cli_command}} = "{{cookiecutter.module_name}}.__main__:{{ cookiecutter.package_name.replace('-', '_') }}" }
 dependencies = ["click"]
 optional-dependencies = { dev = [
-    "flake8",
-    "flake8-bugbear",
+    "ruff",
     "black",
     "isort",
     "mypy",
@@ -63,3 +62,14 @@ warn_redundant_casts = true
 warn_return_any = true
 check_untyped_defs = true
 show_error_codes = true
+
+[tool.ruff]
+select = ["B", "C90", "E", "F", "W"]
+ignore = ["E501"]
+line-length = 88
+
+[tool.ruff.isort]
+known-first-party = ["{{ cookiecutter.module_name }}"]
+
+[tool.ruff.mccabe]
+max-complexity = 18
