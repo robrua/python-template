@@ -63,12 +63,14 @@ check_untyped_defs = true
 show_error_codes = true
 
 [tool.ruff]
-select = ["B", "C90", "E", "F", "W"]
-ignore = ["E501"]
 line-length = 88
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = ["B", "C90", "E", "F", "W"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
 known-first-party = ["{{ cookiecutter.module_name }}"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 18
