@@ -20,7 +20,7 @@ ENV PATH $CONDA_HOME/bin:$PATH
 
 # -- Conda & Python versions
 ARG CONDA_VERSION=latest
-ARG PYTHON_VERSION=3.10
+ARG PYTHON_VERSION=3.12
 
 
 # -- Install Miniconda python
@@ -32,16 +32,18 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${CONDA_VERSION}
 
 
 # -- Install the project
-ARG PROJECT_HOME=/opt/{{cookiecutter.package_name}}
-
-ADD setup.py ${PROJECT_HOME}/setup.py
+ARG PROJECT_HOME=/opt/{{ package_name }}
+{%+ if license != "none" +%}
+ADD LICENSE.txt ${PROJECT_HOME}/LICENSE.txt
+{%- endif +%}
 ADD MANIFEST.in ${PROJECT_HOME}/MANIFEST.in
 ADD README.md ${PROJECT_HOME}/README.md
 ADD pyproject.toml ${PROJECT_HOME}/pyproject.toml
 ADD src/ ${PROJECT_HOME}/src/
 
-RUN pip install -e ${PROJECT_HOME}/
+# Run your build with `--secret id=pip,src=/path/to/pip/conf-or-ini` to use a custom pip configuration
+RUN --mount=type=secret,id=pip,target=/etc/pip.conf pip install -e ${PROJECT_HOME}/
 
 
 # -- Launch project on run
-ENTRYPOINT ["{{cookiecutter.cli_command}}"]
+ENTRYPOINT ["{{ cli_command }}"]

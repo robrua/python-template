@@ -1,0 +1,258 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{ package_name }}"
+{%- if project_type == "stub" +%}
+version = "{{ version }}"
+{%- endif +%}
+description = "{{ description }}"
+readme = "README.md"
+requires-python = ">={%- if project_type == 'stub' -%}3.6{%- else -%}3.8{%- endif -%}"
+{%- if license != "none" +%}
+license = { file = "LICENSE.txt" }
+{%- endif +%}
+keywords = []
+classifiers = []
+dependencies = [{%- if cli -%}"click"{%- elif project_type == 'stub' -%}"{{ target_package }}"{%- endif -%}]
+optional-dependencies = { dev = ["ruff", "mypy"{%- if project_type != 'stub' -%}, "pytest"{%- endif -%}] }
+{%- if project_type != "stub" +%}
+dynamic = ["version"]
+{%- endif +%}
+
+[[project.authors]]
+name = "{{ author_name }}"
+email = "{{ author_email }}"
+{%- if cli +%}
+
+[project.scripts]
+{{ cli_command }} = "{{ module_namespace }}.__main__:{{ cli_function }}"
+{%- endif +%}
+{%- if homepage != "" or documentation != "" or repository != "" +%}
+
+[project.urls]
+{%- endif +%}
+{%- if homepage != "" +%}
+homepage = "{{ homepage }}"
+{%- endif +%}
+{%- if documentation != "" +%}
+documentation = "{{ documentation }}"
+{%- endif +%}
+{%- if repository != "" +%}
+repository = "{{ repository }}"
+{%- endif +%}
+{%- if project_type != "stub" +%}
+
+[tool.hatch.version]
+path = "src/{{ module_path }}/__init__.py"
+pattern = "__version__: Final\\[str\\] = \"(?P<version>.*?)\""
+{%- endif +%}
+{%- if project_type == "stub" or multi_package +%}
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ module_name }}"]
+{%- endif +%}
+
+[tool.ruff]
+src = ["src"{%- if project_type != "stub" -%}, "tests"{%- endif -%}]
+{%- if multi_package +%}
+namespace-packages = ["{{ module_name }}"]
+{%- endif +%}
+line-length = 88
+indent-width = 4
+fix = true
+show-fixes = true
+
+[tool.ruff.format]
+docstring-code-format = true
+indent-style = "space"
+line-ending = "native"
+quote-style = "double"
+
+[tool.ruff.lint]
+select = [
+    "F",     # pyflakes
+    "E",     # pycodestyle (errors)
+    "W",     # pycodestyle (warnings)
+    "C90",   # mccabe
+    "I",     # isort
+    "N",     # pep8-naming
+    "D",     # pydocstyle
+    "UP",    # pyupgrade
+    "YTT",   # flake8-2020
+    "ANN",   # flake8-annotations
+    "ASYNC", # flake8-async
+    "S",     # bandit
+    "BLE",   # flake8-blind-except
+    "B",     # flake8-bugbear
+{%- if project_type != "stub" +%}
+    "A",     # flake8-builtins
+{%- endif +%}
+    "C4",    # flake8-comprehensions
+    "DTZ",   # flake8-datetimez
+    "T10",   # flake8-debugger
+    "EM",    # flake8-errmsg
+    "FA",    # flake8-future-annotations
+    "ISC",   # flake8-implicit-str-concat
+    "ICN",   # flake8-import-conventions
+    "G",     # flake8-logging-format
+{%- if not multi_package +%}
+    "INP",   # flake8-no-pep420
+{%- endif +%}
+{%- if project_type == "stub" +%}
+    "PYI",   # flake8-pyi
+{%- endif +%}
+    "PIE",   # flake8-pie
+    "PT",    # flake8-pytest-style,
+    "RSE",   # flake8-raise
+    "RET",   # flake8-return
+    "SLF",   # flake8-self
+    "SLOT",  # flake8-slots
+    "SIM",   # flake8-simplify
+    "TID",   # flake8-tidy-imports
+    "TCH",   # flake8-type-checking
+    "PTH",   # flake8-use-pathlib
+    "TD",    # flake8-todos
+    "PL",    # pylint
+    "TRY",   # tryceratops
+    "FLY",   # flynt
+    "PERF",  # perflint
+    "LOG",   # flake8-logging
+    "RUF",   # ruff
+]
+ignore = [
+    # Remove Incrementally
+    "ERA",  # Disallow Commented Out Code
+    "T20",  # Disallow Print Statements
+    "D100", # Module Docs Required
+    "D101", # Class Docs Required
+    "D102", # Public Method Docs Required
+    "D103", # Public Function Docs Required
+    "D104", # Public Packaged Docks Required
+    "D105", # Magic Method Docs Required
+    "D106", # Nested Class Docs Required
+    "D107", # Public Constructor Docs Required
+
+    # Dependency-Specific Rules
+    "NPY",  # numpy
+    "TRIO", # flake8-trio
+    "DJ",   # flake8-django
+    "INT",  # flake8-gettext
+    "PD",   # pandas-vet
+    "AIR",  # airflow
+
+    # Exceptions To Selected
+    "UP040",   # Use PEP 695 Type Aliases (mypy doesn't support yet)
+    "ANN101",  # Disallow Untyped First-Argument Self (common pattern)
+    "ANN102",  # Disallow Untyped First-Argument Class (common pattern)
+    "ANN401",  # Disallow typing.Any (using Any instead of leaving untyped indicates consideration)
+    "ISC001",  # Disallow Implicit In-Line String Concatenation (conflicts with ruff format)
+{%- if project_type == "stub" +%}
+    "PYI001",  # Disallow Public TypeVars (they're often part of the API)
+{%- endif +%}
+    "TCH001",  # Disallow First-Party Type-Only Imports (almost never an actual performance concern)
+    "TCH002",  # Disallow Third-Party Type-Only Imports (almost never an actual performance concern)
+    "TCH003",  # Disallow Standard Library Type-Only Imports (almost never an actual performance concern)
+    "TD002",   # Author Required For TODO (not important)
+    "TD003",   # Issue Links Required for TODO (used for a specific issue tracking setup)
+    "PLC0105", # Require Covariance In TypeVar Name (boo hungarian notation)
+    "PLR0904", # Cap Public Methods For Class (mccabe rules can worry about this)
+    "PLR0911", # Cap Return Statements For Function (mccabe rules can worry about this)
+    "PLR0912", # Cap Function Branches (mccabe rules can worry about this)
+    "PLR0913", # Cap Argument Count (mccabe rules can worry about this)
+    "PLR0914", # Cap Local Variables (mccabe rules can worry about this)
+    "PLR0915", # Cap Statements (mccabe rules can worry about this)
+    "PLR0916", # Cap Boolean Expressions For Statement (mccabe rules can worry about this)
+    "PLR0917", # Cap Positional Arguments (mccabe rules can worry about this)
+
+    # Opt-Outs
+    "FBT", # flake8-boolean-trap (too common a pattern)
+{%- if project_type == "stub" +%}
+    "A",   # flake8-builtins (we didn't choose the names)
+{%- endif +%}
+    "COM", # flake8-commas (handled by formatter)
+    "CPY", # flake8-copyright (copyright headers aren't ubiquitous)
+    "EXE", # flake8-executable (template doesn't have directly invoked python files)
+{%- if multi_package +%}
+    "INP", # flake8-no-pep420 (this is a pep 420 project)
+{%- endif +%}
+{%- if project_type != "stub" +%}
+    "PYI", # flake8-pyi (specific to type stub packages)
+{%- endif +%}
+    "Q",   # flake8-quotes (handled by formatter)
+    "ARG", # flake8-unused-arguments (basically unavoidable when using inheritance)
+    "FIX", # flake8-fixme (don't need TODOs as a warning/error)
+    "PGH", # pygrep-hooks (handled in other lints + mypy)
+]
+ignore-init-module-imports = true
+task-tags = ["TODO"]
+{%- if project_type != "stub" +%}
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "S101",
+    "S311",
+    "PLR2004",
+]
+{%- endif +%}
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 88
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+ignore-decorators = ["typing.overload"]
+
+[tool.ruff.lint.isort]
+known-first-party = [{%- if project_type == "stub" -%}"{{ target_module }}"{%- else -%}"{{ module_name }}"{%- endif -%}]
+
+[tool.ruff.lint.flake8-bandit]
+check-typed-exception = true
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["id", "type"]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+
+[tool.ruff.lint.pylint]
+allow-magic-value-types = []
+
+[tool.mypy]
+{%- if multi_package +%}
+mypy_path = "src,tests"
+namespace_packages = true
+explicit_package_bases = true
+{%- endif +%}
+pretty = true
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_optional = true
+strict_equality = true
+extra_checks = true
+disallow_any_unimported = true
+no_implicit_reexport = true
+{%- if project_type != "stub" +%}
+
+[tool.pytest.ini_options]
+console_output_style = "progress"
+{%- endif +%}

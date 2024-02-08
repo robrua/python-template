@@ -1,15 +1,15 @@
 import click
 
-from {{cookiecutter.module_name}} import __version__
+from {{ module_namespace }} import __version__
 
 
-@click.group(help="{{cookiecutter.cli_help}}")
+@click.group(help="{{ cli_help }}")
 @click.version_option(version=__version__)
-def {{ cookiecutter.package_name.replace('-', '_') }}() -> None:
+def {{ cli_function }}() -> None:
     pass
 
 
-@{{ cookiecutter.package_name.replace('-', '_') }}.command(name="echo", help="Echos a message")
+@{{ cli_function }}.command(name="echo", help="Echos a message")
 @click.argument("message", type=str)
 @click.option(
     "-s/-n",
@@ -33,4 +33,4 @@ def echo(message: str, shout: bool = False, repeat: int = 1) -> None:
 
 
 if __name__ == "__main__":
-    {{ cookiecutter.package_name.replace('-', '_') }}(prog_name="{{cookiecutter.cli_command}}")
+    {{ cli_function }}(prog_name="{{ cli_command }}")

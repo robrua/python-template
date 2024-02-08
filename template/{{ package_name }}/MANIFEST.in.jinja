@@ -1,0 +1,5 @@
+{%- if project_type == "stub" -%}
+global-include *.pyi
+{%- else -%}
+include src/{{ module_path }}/py.typed
+{%- endif +%}

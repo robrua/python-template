@@ -1,0 +1,136 @@
+project_type:
+  type: str
+  help: What type of project do you want to create?
+  choices:
+    Library: library
+    CLI Application: cli
+    Docker Application (with CLI): docker
+    Type Stubs: stub
+  default: library
+
+cli:
+  when: false
+  type: bool
+  default: "{% if project_type in ('cli', 'docker') %}yes{% else %}no{% endif %}"
+
+multi_package:
+  when: "{{ project_type != 'stub' }}"
+  type: bool
+  help: "Do you want to create a PEP 420 namespace package (used for multi-package projects)?"
+  default: no
+
+target_package:
+  when: "{{ project_type == 'stub' }}"
+  type: str
+  help: "What package are you making type stubs for?"
+  default: ""
+
+target_module:
+  when: "{{ project_type == 'stub' }}"
+  type: str
+  help: "What's the module (i.e. for imports) name for the package?"
+  default: "{{ target_package.replace('-', '_') }}"
+
+readable_name:
+  when: "{{ project_type != 'stub' }}"
+  type: str
+  help: "What's the human-readable name of your package?"
+
+human_readable_name:
+  when: false
+  type: str
+  default: "{% if project_type == 'stub' %}{{ target_package }} Type Stubs{% else %}{{ readable_name }}{% endif %}"
+
+package_name:
+  type: str
+  help: "What's the filesystem name of your package? (usually kebab-case)"
+  default: "{% if project_type == 'stub' %}{{ target_package.replace('_', '-') }}-stubs{% else %}{{ human_readable_name.lower().replace(' ', '-') }}{% endif %}"
+
+module_name:
+  type: str
+  help: 'What''s the python name of your module? (usually snake_case) - For PEP 420 namespace packages, this should be the top-level global namespace. (e.g., for a namespace package containing the submodule "a.b", this should be "a")'
+  default: "{% if project_type == 'stub' %}{{ target_module }}-stubs{% else %}{{ package_name.replace('-', '_') }}{% endif %}"
+
+submodule_name:
+  when: "{{ multi_package }}"
+  type: str
+  help: 'What''s the python name of your submodule? (e.g., for a namespace package containing the submodule "a.b", this should be "b")'
+  default: "{{ package_name.replace('-', '_').removeprefix(module_name + '_') }}"
+
+module_path:
+  when: false
+  type: str
+  default: "{{ module_name }}{% if multi_package %}/{{ submodule_name }}{% endif %}"
+
+module_namespace:
+  when: false
+  type: str
+  default: "{{ module_name }}{% if multi_package %}.{{ submodule_name }}{% endif %}"
+
+version:
+  type: str
+  help: "What's the initial version number?"
+  default: "0.1.0"
+
+description:
+  type: str
+  help: "What's the short description for the package metadata?"
+  default: "{% if project_type == 'stub' %}Type Stubs for {{ target_package }}{% else %}{% endif %}"
+
+author_name:
+  type: str
+  help: "What's the author's name?"
+
+author_email:
+  type: str
+  help: "What's the author's email address?"
+
+repository:
+  type: str
+  help: "Where's the project's repository?"
+
+homepage:
+  type: str
+  help: "Where's the project's homepage?"
+  default: "{{ repository }}"
+
+documentation:
+  type: str
+  help: "Where's the project's documentation?"
+  default: "{{ homepage }}"
+
+license:
+  type: str
+  help: "What license do you want to use?"
+  choices:
+    MIT License: mit
+    Apache Software License 2.0: apache
+    3-Clause BSD License: bsd
+    GNU GPL v3.0: gpl
+    None: none
+  default: mit
+
+copyright_year:
+  when: "{{ license in ('mit', 'bsd') }}"
+  type: int
+  help: "What year should the license copyright start from?"
+  default: 2024
+
+cli_command:
+  when: "{{ cli }}"
+  type: str
+  help: "What should the CLI command for the application be?"
+  default: "{{ package_name }}"
+
+cli_function:
+  when: false
+  type: str
+  default: "{{ cli_command.replace('-', '_') }}"
+
+cli_help:
+  when: "{{ cli }}"
+  type: str
+  help: "What should the help prompt for the CLI application say?"
+  default: "{{ human_readable_name }} CLI Application"
+
+_subdirectory: template

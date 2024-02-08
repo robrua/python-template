@@ -1,9 +1,20 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
+# Tests
+tests/
 
-# C extensions
-*.so
+# Version Control
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+**/*.py[cod]
 
 # Distribution / packaging
 .Python
