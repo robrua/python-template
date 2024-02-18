@@ -104,6 +104,7 @@ select = [
     "PYI",   # flake8-pyi
 {%- endif +%}
     "PIE",   # flake8-pie
+    "T20",   # flake8-print
     "PT",    # flake8-pytest-style,
     "RSE",   # flake8-raise
     "RET",   # flake8-return
@@ -114,6 +115,7 @@ select = [
     "TCH",   # flake8-type-checking
     "PTH",   # flake8-use-pathlib
     "TD",    # flake8-todos
+    "ERA",   # eradicate
     "PL",    # pylint
     "TRY",   # tryceratops
     "FLY",   # flynt
@@ -123,16 +125,17 @@ select = [
 ]
 ignore = [
     # Remove Incrementally
-    "ERA",  # Disallow Commented Out Code
-    "T20",  # Disallow Print Statements
-    "D100", # Module Docs Required
-    "D101", # Class Docs Required
-    "D102", # Public Method Docs Required
-    "D103", # Public Function Docs Required
-    "D104", # Public Packaged Docks Required
-    "D105", # Magic Method Docs Required
-    "D106", # Nested Class Docs Required
-    "D107", # Public Constructor Docs Required
+    "ERA001", # Disallow Commented Out Code
+    "T201",   # Disallow Print Statements
+    "T203",   # Disallow Pprint Statements
+    "D100",   # Module Docs Required
+    "D101",   # Class Docs Required
+    "D102",   # Public Method Docs Required
+    "D103",   # Public Function Docs Required
+    "D104",   # Public Packaged Docks Required
+    "D105",   # Magic Method Docs Required
+    "D106",   # Nested Class Docs Required
+    "D107",   # Public Constructor Docs Required
 
     # Dependency-Specific Rules
     "NPY",  # numpy
