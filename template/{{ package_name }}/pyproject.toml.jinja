@@ -139,7 +139,6 @@ ignore = [
 
     # Dependency-Specific Rules
     "NPY",  # numpy
-    "TRIO", # flake8-trio
     "DJ",   # flake8-django
     "INT",  # flake8-gettext
     "PD",   # pandas-vet
@@ -188,7 +187,6 @@ ignore = [
     "FIX", # flake8-fixme (don't need TODOs as a warning/error)
     "PGH", # pygrep-hooks (handled in other lints + mypy)
 ]
-ignore-init-module-imports = true
 task-tags = ["TODO"]
 {%- if project_type != "stub" +%}
 
