@@ -146,16 +146,14 @@ ignore = [
 
     # Exceptions To Selected
     "UP040",   # Use PEP 695 Type Aliases (mypy doesn't support yet)
-    "ANN101",  # Disallow Untyped First-Argument Self (common pattern)
-    "ANN102",  # Disallow Untyped First-Argument Class (common pattern)
     "ANN401",  # Disallow typing.Any (using Any instead of leaving untyped indicates consideration)
     "ISC001",  # Disallow Implicit In-Line String Concatenation (conflicts with ruff format)
 {%- if project_type == "stub" +%}
     "PYI001",  # Disallow Public TypeVars (they're often part of the API)
 {%- endif +%}
-    "TCH001",  # Disallow First-Party Type-Only Imports (almost never an actual performance concern)
-    "TCH002",  # Disallow Third-Party Type-Only Imports (almost never an actual performance concern)
-    "TCH003",  # Disallow Standard Library Type-Only Imports (almost never an actual performance concern)
+    "TC001",   # Disallow First-Party Type-Only Imports (almost never an actual performance concern)
+    "TC002",   # Disallow Third-Party Type-Only Imports (almost never an actual performance concern)
+    "TC003",   # Disallow Standard Library Type-Only Imports (almost never an actual performance concern)
     "TD002",   # Author Required For TODO (not important)
     "TD003",   # Issue Links Required for TODO (used for a specific issue tracking setup)
     "PLC0105", # Require Covariance In TypeVar Name (boo hungarian notation)
