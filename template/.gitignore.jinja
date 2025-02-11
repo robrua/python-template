@@ -1,20 +1,9 @@
-# Tests
-tests/
-
-# Version Control
-**/.git/
-**/.gitignore
-**/.gitattributes
-
-# Docker
-docker-compose.yml
-Dockerfile
-.docker
-.dockerignore
-
 # Byte-compiled / optimized / DLL files
-**/__pycache__/
-**/*.py[cod]
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
 
 # Distribution / packaging
 .Python
@@ -79,3 +68,8 @@ target/
 .classpath
 .settings/
 .vscode/
+{%- if project_type != "application" +%}
+
+# uv
+uv.lock
+{%- endif +%}

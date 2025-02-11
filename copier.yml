@@ -3,15 +3,15 @@ project_type:
   help: What type of project do you want to create?
   choices:
     Library: library
-    CLI Application: cli
-    Docker Application (with CLI): docker
+    CLI Tool: cli
+    Application (includes CLI): application
     Type Stubs: stub
   default: library
 
 cli:
   when: false
   type: bool
-  default: "{% if project_type in ('cli', 'docker') %}yes{% else %}no{% endif %}"
+  default: "{% if project_type in ('cli', 'application') %}yes{% else %}no{% endif %}"
 
 multi_package:
   when: "{{ project_type != 'stub' }}"
@@ -85,19 +85,35 @@ author_email:
   type: str
   help: "What's the author's email address?"
 
+repository_base:
+  when: false
+  type: str
+  default: ""
+
 repository:
   type: str
   help: "Where's the project's repository?"
+  default: "{{ repository_base }}/{% if multi_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ package_name }}"
+
+homepage_base:
+  when: false
+  type: str
+  default: ""
 
 homepage:
   type: str
   help: "Where's the project's homepage?"
-  default: "{{ repository }}"
+  default: "{{ homepage_base }}/{% if multi_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ package_name }}"
+
+documentation_base:
+  when: false
+  type: str
+  default: ""
 
 documentation:
   type: str
   help: "Where's the project's documentation?"
-  default: "{{ homepage }}"
+  default: "{{ documentation_base }}/{% if multi_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ package_name }}"
 
 license:
   type: str
@@ -114,7 +130,7 @@ copyright_year:
   when: "{{ license in ('mit', 'bsd') }}"
   type: int
   help: "What year should the license copyright start from?"
-  default: 2024
+  default: 2025
 
 cli_command:
   when: "{{ cli }}"

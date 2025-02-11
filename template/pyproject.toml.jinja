@@ -14,12 +14,14 @@ requires-python = ">={%- if project_type == 'stub' -%}3.6{%- else -%}3.8{%- endi
 license = { file = "LICENSE.txt" }
 {%- endif +%}
 keywords = []
-classifiers = []
+classifiers = ["Private :: Do Not Upload"]
 dependencies = [{%- if cli -%}"click"{%- elif project_type == 'stub' -%}"{{ target_package }}"{%- endif -%}]
-optional-dependencies = { dev = ["ruff", "mypy"{%- if project_type != 'stub' -%}, "pytest"{%- endif -%}] }
 {%- if project_type != "stub" +%}
 dynamic = ["version"]
 {%- endif +%}
+
+[dependency-groups]
+dev = ["mypy"{%- if project_type != 'stub' -%}, "pytest"{%- endif -%}, "ruff"]
 
 [[project.authors]]
 name = "{{ author_name }}"
@@ -202,6 +204,9 @@ task-tags = ["TODO"]
     "S311",
     "PLR2004",
 ]
+{%- if cli +%}
+"**/__main__.py" = ["T201", "T203"]
+{%- endif +%}
 {%- endif +%}
 
 [tool.ruff.lint.pycodestyle]

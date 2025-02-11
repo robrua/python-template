@@ -1,1 +1,1 @@
-This is a [copier](https://github.com/copier-org/copier) template for templating simple python projects. Install it with `pipx install copier` or `pip install copier`. Run `copier copy gh:robrua/python-template.git path/to/parent/directory/` to create a new project.
+This is a [copier](https://github.com/copier-org/copier) template for templating simple python projects. Install it with `uv tool install copier`, `pipx install copier`, or `pip install copier`. Run `copier copy gh:robrua/python-template.git path/to/directory/` to create a new project.

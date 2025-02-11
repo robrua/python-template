@@ -1,0 +1,50 @@
+FROM docker.io/redhat/ubi8 as build
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_INSTALL_DIR=/opt/python \
+    UV_PYTHON_PREFERENCE=only-managed \
+    PROJECT_HOME=/opt/{{ package_name }}
+
+
+# -- Install Python via uv
+ARG PYTHON_VERSION=3.12
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && ~/.local/bin/uv python install ${PYTHON_VERSION}
+
+
+# -- Install project depdencies
+ADD uv.lock ${PROJECT_HOME}/uv.lock
+ADD pyproject.toml ${PROJECT_HOME}/pyproject.toml
+RUN --mount=type=cache,uid=1001,target=/root/.cache/uv \
+    --mount=type=secret,id=uv-toml,uid=1001,target=${PROJECT_HOME}/uv.toml \
+    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --frozen --no-install-project --no-dev
+
+
+# -- Install the project
+{%+ if license != "none" +%}
+ADD LICENSE.txt ${PROJECT_HOME}/LICENSE.txt
+{%- endif +%}
+ADD MANIFEST.in ${PROJECT_HOME}/MANIFEST.in
+ADD README.md ${PROJECT_HOME}/README.md
+ADD src/ ${PROJECT_HOME}/src/
+
+RUN --mount=type=cache,uid=1001,target=/root/.cache/uv \
+    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --frozen --no-dev
+
+
+# -- Move into final build image & ensure the venv is used for python
+FROM docker.io/redhat/ubi8-minimal
+
+ENV PYTHON_HOME=/opt/python \
+    PROJECT_HOME=/opt/{{ package_name }}
+
+COPY --from=build ${PYTHON_HOME} ${PYTHON_HOME}
+COPY --from=build ${PROJECT_HOME} ${PROJECT_HOME}
+
+ENV PATH="${PROJECT_HOME}/.venv/bin:$PATH"
+
+
+# -- Launch project on run
+ENTRYPOINT ["{{ cli_command }}"]
