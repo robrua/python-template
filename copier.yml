@@ -43,7 +43,7 @@ human_readable_name:
 
 package_name:
   type: str
-  help: "What's the filesystem name of your package? (usually kebab-case)"
+  help: "What's the canonical name of your package? (usually kebab-case)"
   default: "{% if project_type == 'stub' %}{{ target_package.replace('_', '-') }}-stubs{% else %}{{ human_readable_name.lower().replace(' ', '-') }}{% endif %}"
 
 module_name:
@@ -85,6 +85,11 @@ author_email:
   type: str
   help: "What's the author's email address?"
 
+directory:
+  when: false
+  type: str
+  default: "{{ package_name }}"
+
 repository_base:
   when: false
   type: str
@@ -93,7 +98,7 @@ repository_base:
 repository:
   type: str
   help: "Where's the project's repository?"
-  default: "{{ repository_base }}/{% if multi_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ package_name }}"
+  default: "{% if repository_base %}{{ repository_base }}/{% endif %}{% if multi_package %}{{ module_name.replace('_', '-') }}/{{ directory }}{% else %}{{ package_name }}{% endif %}"
 
 homepage_base:
   when: false
@@ -103,7 +108,7 @@ homepage_base:
 homepage:
   type: str
   help: "Where's the project's homepage?"
-  default: "{{ homepage_base }}/{% if multi_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ package_name }}"
+  default: "{% if homepage_base %}{{ homepage_base }}/{% endif %}{% if multi_package %}{{ module_name.replace('_', '-') }}/{{ directory }}{% else %}{{ package_name }}{% endif %}"
 
 documentation_base:
   when: false
@@ -113,7 +118,7 @@ documentation_base:
 documentation:
   type: str
   help: "Where's the project's documentation?"
-  default: "{{ documentation_base }}/{% if multi_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ package_name }}"
+  default: "{% if documentation_base %}{{ documentation_base }}/{% endif %}{% if multi_package %}{{ module_name.replace('_', '-') }}/{{ directory }}{% else %}{{ package_name }}{% endif %}"
 
 license:
   type: str
