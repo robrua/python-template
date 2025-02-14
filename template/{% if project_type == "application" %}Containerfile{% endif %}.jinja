@@ -8,10 +8,9 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 
 # -- Install Python via uv
-ARG PYTHON_VERSION=3.12
-
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && ~/.local/bin/uv python install ${PYTHON_VERSION}
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ARG PYTHON_VERSION=""
+RUN ~/.local/bin/uv python install ${PYTHON_VERSION}
 
 
 # -- Install project depdencies
@@ -23,7 +22,7 @@ RUN --mount=type=cache,uid=1001,target=/root/.cache/uv \
     --mount=type=bind,source=LICENSE.txt,target=${PROJECT_HOME}/LICENSE.txt \
 {%- endif +%}
     --mount=type=secret,id=uv-toml,uid=1001,target=/root/.config/uv/uv.toml \
-    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --frozen --no-install-project --no-dev --no-sources
+    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --no-install-project --no-dev --no-sources
 
 
 # -- Install the project
