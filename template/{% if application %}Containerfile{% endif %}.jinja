@@ -1,0 +1,88 @@
+FROM docker.io/redhat/ubi10 AS build
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_CACHE_DIR=/opt/uv-cache \
+    UV_PYTHON_CACHE_DIR=/opt/uv-cache/python \
+    UV_PYTHON_INSTALL_DIR=/opt/python \
+    UV_PYTHON_PREFERENCE=only-managed \
+    UV_NO_EDITABLE=1 \
+    PROJECT_HOME=/opt/{{ package_name }}
+
+
+# -- Install Python via uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ARG PYTHON_VERSION=""
+RUN --mount=type=cache,uid=1001,target=/opt/uv-cache ~/.local/bin/uv python install ${PYTHON_VERSION}
+
+
+# -- Install project depdencies
+ADD pyproject.toml ${PROJECT_HOME}/pyproject.toml
+
+# We want to ignore uv sources for local packages & workspace sources, but not git or url sources.
+# Unfortunately there's no option that explicitly, so we install in two stages.
+
+# First, allow sources but skip installing any local/workspace packages
+RUN --mount=type=cache,uid=1001,target=/opt/uv-cache \
+    --mount=type=bind,source=src/{{ module_path }}/__init__.py,target=${PROJECT_HOME}/src/{{ module_path }}/__init__.py \
+    --mount=type=bind,source=README.md,target=${PROJECT_HOME}/README.md \
+{%- if license in ("mit", "apache", "bsd") %}
+    --mount=type=bind,source=LICENSE.txt,target=${PROJECT_HOME}/LICENSE.txt \
+{%- elif license == "lgpl" %}
+    --mount=type=bind,source=COPYING,target=${PROJECT_HOME}/COPYING \
+    --mount=type=bind,source=COPYING.LESSER,target=${PROJECT_HOME}/COPYING.LESSER \
+{%- elif license == "gpl" %}
+    --mount=type=bind,source=COPYING,target=${PROJECT_HOME}/COPYING \
+{%- endif +%}
+    --mount=type=secret,id=uv-toml-system,uid=1001,target=/etc/uv/uv.toml \
+    --mount=type=secret,id=uv-toml-user,uid=1001,target=/root/.config/uv/uv.toml \
+    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --no-install-project --no-dev --no-install-workspace --no-install-local
+
+# Next, disallow sources but don't skip local/workspace packages. This will force them to be downloaded from a release channel instead.
+RUN --mount=type=cache,uid=1001,target=/opt/uv-cache \
+    --mount=type=bind,source=src/{{ module_path }}/__init__.py,target=${PROJECT_HOME}/src/{{ module_path }}/__init__.py \
+    --mount=type=bind,source=README.md,target=${PROJECT_HOME}/README.md \
+{%- if license in ("mit", "apache", "bsd") %}
+    --mount=type=bind,source=LICENSE.txt,target=${PROJECT_HOME}/LICENSE.txt \
+{%- elif license == "lgpl" %}
+    --mount=type=bind,source=COPYING,target=${PROJECT_HOME}/COPYING \
+    --mount=type=bind,source=COPYING.LESSER,target=${PROJECT_HOME}/COPYING.LESSER \
+{%- elif license == "gpl" %}
+    --mount=type=bind,source=COPYING,target=${PROJECT_HOME}/COPYING \
+{%- endif +%}
+    --mount=type=secret,id=uv-toml-system,uid=1001,target=/etc/uv/uv.toml \
+    --mount=type=secret,id=uv-toml-user,uid=1001,target=/root/.config/uv/uv.toml \
+    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --no-install-project --no-dev --no-sources
+
+
+# -- Install the project
+{%- if license in ("mit", "apache", "bsd") %}
+ADD LICENSE.txt ${PROJECT_HOME}/LICENSE.txt
+{%- elif license == "lgpl" %}
+ADD COPYING ${PROJECT_HOME}/COPYING
+ADD COPYING.LESSER ${PROJECT_HOME}/COPYING.LESSER
+{%- elif license == "gpl" %}
+ADD COPYING ${PROJECT_HOME}/COPYING
+{%- endif +%}
+ADD MANIFEST.in ${PROJECT_HOME}/MANIFEST.in
+ADD README.md ${PROJECT_HOME}/README.md
+ADD src/ ${PROJECT_HOME}/src/
+
+RUN --mount=type=cache,uid=1001,target=/opt/uv-cache \
+    ~/.local/bin/uv sync --directory ${PROJECT_HOME} --frozen --no-dev
+
+
+# -- Move into final build image & ensure the venv is used for python
+FROM docker.io/redhat/ubi10-micro
+
+ENV PYTHON_HOME=/opt/python \
+    PROJECT_HOME=/opt/{{ package_name }}
+
+COPY --from=build ${PYTHON_HOME} ${PYTHON_HOME}
+COPY --from=build ${PROJECT_HOME} ${PROJECT_HOME}
+
+ENV PATH="${PROJECT_HOME}/.venv/bin:$PATH"
+
+
+# -- Launch project on run
+ENTRYPOINT ["{{ cli_command }}"]

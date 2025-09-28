@@ -1,9 +1,9 @@
 import click
 
-from {{ module_namespace }} import __version__
+from {{ module }} import __version__
 
 
-@click.group(help="{{ cli_help }}")
+@click.group(help="{{ human_readable_name }} CLI Application")
 @click.version_option(version=__version__)
 def {{ cli_function }}() -> None:
     pass

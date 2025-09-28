@@ -1,3 +1,26 @@
+# Tests
+tests/
+
+# Version Control
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Containers
+**/podman-compose.yml
+**/docker-compose.yml
+**/podman-compose.yaml
+**/docker-compose.yaml
+**/Containerfile
+**/Containerfile.*
+**/*.containerfile
+**/Dockerfile
+**/Dockerfile.*
+**/*.containerfile
+**/.docker
+**/.containerignore
+**/.dockerignore
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -169,8 +192,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-{%- if not application +%}
-
-# uv
-uv.lock
-{%- endif +%}

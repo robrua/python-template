@@ -4,32 +4,36 @@ build-backend = "hatchling.build"
 
 [project]
 name = "{{ package_name }}"
-{%- if project_type == "stub" +%}
-version = "{{ version }}"
-{%- endif +%}
 description = "{{ description }}"
 readme = "README.md"
-requires-python = ">={%- if project_type == 'stub' -%}3.6{%- else -%}3.8{%- endif -%}"
-{%- if license != "none" +%}
-license = { file = "LICENSE.txt" }
+requires-python = "{{ requires_python }}"
+{%- if license_identifier != "" +%}
+license = "{{ license_identifier }}"
+{%- endif +%}
+{%- if license_files != "" +%}
+license-files = [{{ license_files }}]
 {%- endif +%}
 keywords = []
 classifiers = ["Private :: Do Not Upload"]
-dependencies = [{%- if cli -%}"click"{%- elif project_type == 'stub' -%}"{{ target_package }}"{%- endif -%}]
-{%- if project_type != "stub" +%}
+dependencies = [{%- if cli -%}"click"{%- endif -%}]
 dynamic = ["version"]
-{%- endif +%}
 
 [dependency-groups]
-dev = ["mypy"{%- if project_type != 'stub' -%}, "pytest"{%- endif -%}, "ruff"]
+dev = ["mypy", "pytest", "ruff"]
+{%- if author_name != "" or author_email != "" +%}
 
 [[project.authors]]
+{%- endif +%}
+{%- if author_name != "" +%}
 name = "{{ author_name }}"
+{%- endif +%}
+{%- if author_email != "" +%}
 email = "{{ author_email }}"
+{%- endif +%}
 {%- if cli +%}
 
 [project.scripts]
-{{ cli_command }} = "{{ module_namespace }}.__main__:{{ cli_function }}"
+{{ cli_command }} = "{{ module }}.__main__:{{ cli_function }}"
 {%- endif +%}
 {%- if homepage != "" or documentation != "" or repository != "" +%}
 
@@ -44,21 +48,19 @@ documentation = "{{ documentation }}"
 {%- if repository != "" +%}
 repository = "{{ repository }}"
 {%- endif +%}
-{%- if project_type != "stub" +%}
 
 [tool.hatch.version]
 path = "src/{{ module_path }}/__init__.py"
 pattern = "__version__: Final\\[str\\] = \"(?P<version>.*?)\""
-{%- endif +%}
-{%- if project_type == "stub" or multi_package +%}
+{%- if namespace_package +%}
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/{{ module_name }}"]
 {%- endif +%}
 
 [tool.ruff]
-src = ["src"{%- if project_type != "stub" -%}, "tests"{%- endif -%}]
-{%- if multi_package +%}
+src = ["src", "tests"]
+{%- if namespace_package +%}
 namespace-packages = ["{{ module_name }}"]
 {%- endif +%}
 line-length = 88
@@ -88,9 +90,7 @@ select = [
     "S",     # bandit
     "BLE",   # flake8-blind-except
     "B",     # flake8-bugbear
-{%- if project_type != "stub" +%}
     "A",     # flake8-builtins
-{%- endif +%}
     "C4",    # flake8-comprehensions
     "DTZ",   # flake8-datetimez
     "T10",   # flake8-debugger
@@ -99,11 +99,8 @@ select = [
     "ISC",   # flake8-implicit-str-concat
     "ICN",   # flake8-import-conventions
     "G",     # flake8-logging-format
-{%- if not multi_package +%}
+{%- if not namespace_package +%}
     "INP",   # flake8-no-pep420
-{%- endif +%}
-{%- if project_type == "stub" +%}
-    "PYI",   # flake8-pyi
 {%- endif +%}
     "PIE",   # flake8-pie
     "T20",   # flake8-print
@@ -140,19 +137,16 @@ ignore = [
     "D107",   # Public Constructor Docs Required
 
     # Dependency-Specific Rules
-    "NPY",  # numpy
-    "DJ",   # flake8-django
-    "INT",  # flake8-gettext
-    "PD",   # pandas-vet
-    "AIR",  # airflow
+    "NPY", # numpy
+    "DJ",  # flake8-django
+    "INT", # flake8-gettext
+    "PD",  # pandas-vet
+    "AIR", # airflow
 
     # Exceptions To Selected
     "UP040",   # Use PEP 695 Type Aliases (mypy doesn't support yet)
     "ANN401",  # Disallow typing.Any (using Any instead of leaving untyped indicates consideration)
     "ISC001",  # Disallow Implicit In-Line String Concatenation (conflicts with ruff format)
-{%- if project_type == "stub" +%}
-    "PYI001",  # Disallow Public TypeVars (they're often part of the API)
-{%- endif +%}
     "TC001",   # Disallow First-Party Type-Only Imports (almost never an actual performance concern)
     "TC002",   # Disallow Third-Party Type-Only Imports (almost never an actual performance concern)
     "TC003",   # Disallow Standard Library Type-Only Imports (almost never an actual performance concern)
@@ -170,25 +164,19 @@ ignore = [
 
     # Opt-Outs
     "FBT", # flake8-boolean-trap (too common a pattern)
-{%- if project_type == "stub" +%}
-    "A",   # flake8-builtins (we didn't choose the names)
-{%- endif +%}
     "COM", # flake8-commas (handled by formatter)
     "CPY", # flake8-copyright (copyright headers aren't ubiquitous)
     "EXE", # flake8-executable (template doesn't have directly invoked python files)
-{%- if multi_package +%}
+{%- if namespace_package +%}
     "INP", # flake8-no-pep420 (this is a pep 420 project)
 {%- endif +%}
-{%- if project_type != "stub" +%}
     "PYI", # flake8-pyi (specific to type stub packages)
-{%- endif +%}
     "Q",   # flake8-quotes (handled by formatter)
     "ARG", # flake8-unused-arguments (basically unavoidable when using inheritance)
     "FIX", # flake8-fixme (don't need TODOs as a warning/error)
     "PGH", # pygrep-hooks (handled in other lints + mypy)
 ]
 task-tags = ["TODO"]
-{%- if project_type != "stub" +%}
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
@@ -207,7 +195,6 @@ task-tags = ["TODO"]
 {%- if cli +%}
 "**/__main__.py" = ["T201", "T203"]
 {%- endif +%}
-{%- endif +%}
 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 88
@@ -217,7 +204,7 @@ convention = "google"
 ignore-decorators = ["typing.overload"]
 
 [tool.ruff.lint.isort]
-known-first-party = [{%- if project_type == "stub" -%}"{{ target_module }}"{%- else -%}"{{ module_name }}"{%- endif -%}]
+known-first-party = ["{{ module_name }}"]
 
 [tool.ruff.lint.flake8-bandit]
 check-typed-exception = true
@@ -233,7 +220,7 @@ mark-parentheses = false
 allow-magic-value-types = []
 
 [tool.mypy]
-{%- if multi_package +%}
+{%- if namespace_package +%}
 mypy_path = "src,tests"
 namespace_packages = true
 explicit_package_bases = true
@@ -255,8 +242,6 @@ strict_equality = true
 extra_checks = true
 disallow_any_unimported = true
 no_implicit_reexport = true
-{%- if project_type != "stub" +%}
 
 [tool.pytest.ini_options]
 console_output_style = "progress"
-{%- endif +%}

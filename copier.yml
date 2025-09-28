@@ -1,94 +1,88 @@
+_subdirectory: template
+
 project_type:
   type: str
-  help: What type of project do you want to create?
+  help: "What type of project do you want to create?"
   choices:
-    Library: library
-    CLI Tool: cli
-    Application (includes CLI): application
-    Type Stubs: stub
-  default: library
+    Library: "library"
+    CLI Tool: "cli"
+    Application (includes CLI): "application"
+  default: "library"
 
 cli:
   when: false
   type: bool
   default: "{% if project_type in ('cli', 'application') %}yes{% else %}no{% endif %}"
 
-multi_package:
-  when: "{{ project_type != 'stub' }}"
+application:
+  when: false
   type: bool
-  help: "Do you want to create a PEP 420 namespace package (used for multi-package projects)?"
+  default: "{% if project_type == 'application' %}yes{% else %}no{% endif %}"
+
+namespace_package:
+  type: bool
+  help: "Do you want to create a PEP 420 namespace package? Use this if you're creating one of many subpackages that share a top-level logical namespace (i.e., project.*)."
   default: no
 
-target_package:
-  when: "{{ project_type == 'stub' }}"
-  type: str
-  help: "What package are you making type stubs for?"
-  default: ""
-
-target_module:
-  when: "{{ project_type == 'stub' }}"
-  type: str
-  help: "What's the module (i.e. for imports) name for the package?"
-  default: "{{ target_package.replace('-', '_') }}"
-
-readable_name:
-  when: "{{ project_type != 'stub' }}"
-  type: str
-  help: "What's the human-readable name of your package?"
-
 human_readable_name:
-  when: false
   type: str
-  default: "{% if project_type == 'stub' %}{{ target_package }} Type Stubs{% else %}{{ readable_name }}{% endif %}"
+  help: 'What''s the human-readable name of the package? (e.g., "An Example Project")'
 
 package_name:
   type: str
-  help: "What's the canonical name of your package? (usually kebab-case)"
-  default: "{% if project_type == 'stub' %}{{ target_package.replace('_', '-') }}-stubs{% else %}{{ human_readable_name.lower().replace(' ', '-') }}{% endif %}"
-
-module_name:
-  type: str
-  help: 'What''s the python name of your module? (usually snake_case) - For PEP 420 namespace packages, this should be the top-level global namespace. (e.g., for a namespace package containing the submodule "a.b", this should be "a")'
-  default: "{% if project_type == 'stub' %}{{ target_module }}-stubs{% else %}{{ package_name.replace('-', '_') }}{% endif %}"
-
-submodule_name:
-  when: "{{ multi_package }}"
-  type: str
-  help: 'What''s the python name of your submodule? (e.g., for a namespace package containing the submodule "a.b", this should be "b")'
-  default: "{{ package_name.replace('-', '_').removeprefix(module_name + '_') }}"
-
-module_path:
-  when: false
-  type: str
-  default: "{{ module_name }}{% if multi_package %}/{{ submodule_name }}{% endif %}"
-
-module_namespace:
-  when: false
-  type: str
-  default: "{{ module_name }}{% if multi_package %}.{{ submodule_name }}{% endif %}"
-
-version:
-  type: str
-  help: "What's the initial version number?"
-  default: "0.1.0"
-
-description:
-  type: str
-  help: "What's the short description for the package metadata?"
-  default: "{% if project_type == 'stub' %}Type Stubs for {{ target_package }}{% else %}{% endif %}"
-
-author_name:
-  type: str
-  help: "What's the author's name?"
-
-author_email:
-  type: str
-  help: "What's the author's email address?"
+  help: "What's the canonical name of your package? (use kebab-case)"
+  default: "{{ human_readable_name.lower().replace(' ', '-') }}"
 
 directory:
   when: false
   type: str
   default: "{{ package_name }}"
+
+module_name:
+  type: str
+  help: "What's the python name of your module? This is the one you use in import statements. If you're creating a PEP 420 namespace package, this should only be the top-level logical namespace, not the one unique to this package. (use snake_case)"
+  default: "{{ package_name.replace('-', '_') }}"
+
+submodule_name:
+  when: "{{ namespace_package }}"
+  type: str
+  help: "What's the python name of your submodule? This should be unique to this package within your top-level logical namespace."
+  default: "{{ package_name.replace('-', '_').removeprefix(module_name + '_') }}"
+
+module_path:
+  when: false
+  type: str
+  default: "{{ module_name }}{% if namespace_package %}/{{ submodule_name }}{% endif %}"
+
+module:
+  when: false
+  type: str
+  default: "{{ module_name }}{% if namespace_package %}.{{ submodule_name }}{% endif %}"
+
+version:
+  type: str
+  help: "What should the initial version number be?"
+  default: "0.1.0"
+
+description:
+  type: str
+  help: "Provide a short description of the project. (for package metadata & the README.md)"
+  default: ""
+
+requires_python:
+  when: false
+  type: str
+  default: ">=3.10"
+
+author_name:
+  type: str
+  help: "What's the author's name?"
+  default: ""
+
+author_email:
+  type: str
+  help: "What's the author's email address?"
+  default: ""
 
 repository_base:
   when: false
@@ -97,8 +91,8 @@ repository_base:
 
 repository:
   type: str
-  help: "Where's the project's repository?"
-  default: "{% if repository_base %}{{ repository_base }}/{% endif %}{% if multi_package %}{{ module_name.replace('_', '-') }}/{{ directory }}{% else %}{{ package_name }}{% endif %}"
+  help: "Where will the project's repository be?"
+  default: "{% if repository_base %}{{ repository_base }}/{% if namespace_package %}{{ module_name.replace('_', '-') }}/{% endif %}{{ directory }}{% endif %}"
 
 homepage_base:
   when: false
@@ -107,8 +101,8 @@ homepage_base:
 
 homepage:
   type: str
-  help: "Where's the project's homepage?"
-  default: "{% if homepage_base %}{{ homepage_base }}/{% endif %}{% if multi_package %}{{ module_name.replace('_', '-') }}/{{ directory }}{% else %}{{ package_name }}{% endif %}"
+  help: "Where will the project's homepage be?"
+  default: "{% if homepage_base %}{{ homepage_base }}/{{ package_name }}{% else %}{{ repository }}{% endif %}"
 
 documentation_base:
   when: false
@@ -117,41 +111,38 @@ documentation_base:
 
 documentation:
   type: str
-  help: "Where's the project's documentation?"
-  default: "{% if documentation_base %}{{ documentation_base }}/{% endif %}{% if multi_package %}{{ module_name.replace('_', '-') }}/{{ directory }}{% else %}{{ package_name }}{% endif %}"
+  help: "Where will the project's documentation be?"
+  default: "{% if documentation_base %}{{ documentation_base }}/{{ package_name }}{% else %}{{ homepage }}{% endif %}"
 
 license:
   type: str
-  help: "What license do you want to use?"
+  help: "What license do you want to use? Visit https://choosealicense.com if you want more information."
   choices:
     MIT License: mit
     Apache Software License 2.0: apache
-    3-Clause BSD License: bsd
+    BSD 3-Clause License: bsd
+    GNU LGPL v3.0: lgpl
     GNU GPL v3.0: gpl
     None: none
   default: mit
 
-copyright_year:
-  when: "{{ license in ('mit', 'bsd') }}"
-  type: int
-  help: "What year should the license copyright start from?"
-  default: 2025
+license_identifier:
+  when: false
+  type: str
+  default: "{% if license == 'mit' %}MIT{% elif license == 'apache' %}Apache-2.0{% elif license == 'bsd' %}BSD-3-Clause{% elif license == 'lgpl' %}LGPL-3.0-or-later{% elif license == 'gpl' %}GPL-3.0-or-later{% endif %}"
+
+license_files:
+  when: false
+  type: str
+  default: '{% if license in ("mit", "apache", "bsd") %}"LICENSE.txt"{% elif license == "lgpl" %}"COPYING", "COPYING.LESSER"{% elif license == "gpl" %}"COPYING"{% endif %}'
 
 cli_command:
   when: "{{ cli }}"
   type: str
-  help: "What should the CLI command for the application be?"
+  help: "What should the CLI command for the application be? (use kebab-case)"
   default: "{{ package_name }}"
 
 cli_function:
   when: false
   type: str
   default: "{{ cli_command.replace('-', '_') }}"
-
-cli_help:
-  when: "{{ cli }}"
-  type: str
-  help: "What should the help prompt for the CLI application say?"
-  default: "{{ human_readable_name }} CLI Application"
-
-_subdirectory: template
