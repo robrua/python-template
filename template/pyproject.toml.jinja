@@ -19,7 +19,7 @@ dependencies = [{%- if cli -%}"click"{%- endif -%}]
 dynamic = ["version"]
 
 [dependency-groups]
-dev = ["mypy", "pytest", "ruff"]
+dev = ["mypy", "pytest", "pytest-beartype", "ruff"]
 {%- if author_name != "" or author_email != "" +%}
 
 [[project.authors]]
@@ -245,3 +245,4 @@ no_implicit_reexport = true
 
 [tool.pytest.ini_options]
 console_output_style = "progress"
+beartype_packages = ["{{ module }}"]
