@@ -31,7 +31,7 @@ human_readable_name:
 package_name:
   type: str
   help: "What's the canonical name of your package? (use kebab-case)"
-  default: "{{ human_readable_name.lower().replace(' ', '-') }}"
+  default: "{{ human_readable_name.lower().replace(' ', '-').replace('.', '-') }}"
 
 directory:
   when: false
