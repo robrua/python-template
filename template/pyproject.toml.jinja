@@ -52,11 +52,9 @@ repository = "{{ repository }}"
 [tool.hatch.version]
 path = "src/{{ module_path }}/__init__.py"
 pattern = "__version__: Final\\[str\\] = \"(?P<version>.*?)\""
-{%- if namespace_package +%}
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/{{ module_name }}"]
-{%- endif +%}
 
 [tool.ruff]
 src = ["src", "tests"]
